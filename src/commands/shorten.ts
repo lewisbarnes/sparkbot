@@ -1,8 +1,9 @@
 import { CommandInteraction, Client, ApplicationCommand } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import axios from 'axios';
+import type { Command } from '../types/command';
 
-export default {
+export default <Command> {
   data: new SlashCommandBuilder()
     .setName('shorten')
     .setDescription(`Shortens a given URL`)
