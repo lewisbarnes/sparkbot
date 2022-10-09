@@ -1,4 +1,3 @@
-const { REST, Routes } = require('discord.js');
 import { Client } from "discord.js";
 import fs from "node:fs";
 
@@ -15,6 +14,6 @@ export default async (client: Client) => {
 	for(const file of commandFiles) {
 		await import(`./commands/${file}`).then(result => commands.push(result.default));
 	}
-	console.log('Registered Commands:','\n'+commands.map(command => command.data).map(command => command.name).join('\n'));
 	client.application.commands.set(commands.map(command => command.data));
+	console.info('Registered Commands:',commands.map(command => command.data).map(command => command.name).join(', '));
 }

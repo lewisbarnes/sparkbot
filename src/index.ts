@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import { Client } from 'discord.js';
 import ready from './listeners/ready';
-import interactionCreate from './listeners/interactionCreate';
 
 import * as hello from './commands/dev';
 
