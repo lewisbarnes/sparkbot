@@ -1,5 +1,6 @@
 import { Client, REST, Routes } from 'discord.js';
 import fs from 'node:fs';
+import path from 'node:path';
 import type { Command } from './types/command';
 
 export const commands = Array<Command>();
@@ -22,9 +23,9 @@ export default async (client: Client) => {
   }
 
   try {
-    for (const file of getCommands(`${process.env.ROOT_DIR}/commands`, [])) {
-      const command = require(file.replace(`${process.env.ROOT_DIR}`, '.'));
-      commands.push(command);
+    for (const file of getCommands(path.join(__dirname, `/commands`), [])) {
+      let command = await import(file.replace(`${process.env.ROOT_DIR}`, '.'));
+      commands.push(command.default);
     }
 
     // client.application.commands.set(commands.map((command) => command.data));

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { Client, CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 
 type CatWeightInfo = {
   imperial: string;
@@ -26,11 +26,11 @@ type CatImageResponse = {
   breeds: CatBreedInfo[];
 };
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('cat')
     .setDescription('Request info about a random cat breed'),
-  async execute(interaction: CommandInteraction) {
+  async execute(interaction: CommandInteraction, client: Client) {
     let request = axios.create({
       headers: {
         'X-API-KEY': process.env.CAT_API_KEY,

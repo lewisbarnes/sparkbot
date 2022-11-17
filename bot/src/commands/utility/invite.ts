@@ -1,12 +1,13 @@
-import { CommandInteraction, hyperlink, SlashCommandBuilder } from 'discord.js';
+import { Client, CommandInteraction, hyperlink, SlashCommandBuilder } from 'discord.js';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder().setName('invite').setDescription(`Add the bot to a server`),
-  async execute(interaction: CommandInteraction) {
+  async execute(interaction: CommandInteraction, client: Client) {
     const link = hyperlink(
       'Invite Me!',
       `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_APP_ID}&permissions=2048&scope=bot%20applications.commands%20messages.read`
     );
+
     interaction.reply({
       content: link,
       ephemeral: true,

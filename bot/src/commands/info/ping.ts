@@ -1,14 +1,21 @@
-import dayjs from 'dayjs';
-import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { Client, CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 
-module.exports = {
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(duration);
+dayjs.extend(utc);
+
+export default {
   data: new SlashCommandBuilder().setName('ping').setDescription(`See bot latency`),
-  async execute(interaction: CommandInteraction) {
+  async execute(interaction: CommandInteraction, client: Client) {
     await interaction.deferReply({
-      ephemeral: false,
+      ephemeral: true,
     });
     await interaction.editReply('Pinging...').then(async () => {
-      const ping = dayjs(interaction.createdAt).diff(dayjs());
+      console.log(interaction.createdAt.toString());
+      const ping = dayjs.duration(dayjs().valueOf() - dayjs(interaction.createdAt).utc().valueOf());
       const apiPing = interaction.client.ws.ping;
 
       await interaction.editReply({
@@ -21,7 +28,7 @@ module.exports = {
             })
             .setColor('Aqua')
             .addFields([
-              { name: 'Bot Latency', value: `${ping}ms` },
+              { name: 'Bot Latency', value: `${ping.asMilliseconds()}ms` },
               { name: 'API Latency', value: `${apiPing}ms` },
             ])
             .setFooter({

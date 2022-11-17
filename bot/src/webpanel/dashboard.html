@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="/css/globals.css" />
+    <script src="https://cdn.socket.io/4.5.3/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/utc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/duration.js"></script>
+    <script>
+      const socket = io();
+      dayjs.extend(window.dayjs_plugin_utc);
+      dayjs.extend(window.dayjs_plugin_duration);
+
+      let uptime = 0;
+
+      socket.on('uptimeUpdate', (arg) => {
+        uptime = arg;
+        const upDisplay = document.getElementById('uptime-field');
+        const duration = dayjs.duration(uptime);
+        upDisplay.innerText = `${Math.floor(
+          duration.asHours()
+        )}h ${duration.minutes()}m ${duration.seconds()}s`;
+      });
+
+      socket.on('initialData', (arg) => {
+        const commands = document.getElementById('commands');
+        commands.innerHTML = '';
+        arg.forEach((interaction) => {
+          if ('command' in interaction) {
+            const newCommand = document.createElement('p');
+            newCommand.innerText = `[${dayjs(interaction.timestamp).format(
+              'YYYY/MM/DD HH:mm:ss'
+            )}] ${interaction.username} executed ${interaction.command}`;
+            commands.appendChild(newCommand);
+          }
+        });
+      });
+
+      socket.on('commandExecuted', (command) => {
+        const commands = document.getElementById('commands');
+        const newCommand = document.createElement('p');
+        newCommand.innerText = `[${dayjs(interaction.timestamp)}] ${
+          interaction.username
+        } executed ${interaction.command}`;
+        commands.appendChild(newCommand);
+      });
+
+      setInterval(() => {
+        uptime += 1000;
+        const upDisplay = document.getElementById('uptime-field');
+        const duration = dayjs.duration(uptime);
+        upDisplay.innerText = `${Math.floor(
+          duration.asHours()
+        )}h ${duration.minutes()}m ${duration.seconds()}s`;
+      }, 1000);
+
+      const setName = () => {
+        const newName = document.getElementById('name-change');
+        if (!newName.value) {
+          return;
+        }
+        socket.emit('nameChange', newName.value);
+      };
+
+      const initialDataRequest = () => {
+        socket.emit('initialDataRequest');
+      };
+
+      setInterval(() => {
+        initialDataRequest();
+      }, 10000);
+
+      socket.emit('uptimeRequest');
+    </script>
+  </head>
+  <body>
+    <div class="flex-col">
+      <div class="flex-row" id="header">
+        <img class="rounded" src="/img/sparkbot.webp" height="24" width="24" />
+        <h1>SparkBot Web Panel</h1>
+      </div>
+      <div class="flex-row full-height">
+        <div
+          class="flex-grow full-height flex-col"
+          id="commands"
+          onclick="initialDataRequest()"
+        ></div>
+      </div>
+      <p id="uptime-display">
+        <span id="uptime-field"></span>
+      </p>
+    </div>
+  </body>
+</html>
