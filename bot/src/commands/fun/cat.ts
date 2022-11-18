@@ -59,9 +59,12 @@ export default {
         iconURL: interaction.user.displayAvatarURL(),
       });
 
-    interaction.reply({
+    const commandResponse = {
       embeds: [catEmbed],
       ephemeral: true,
-    });
+    };
+
+    interaction.reply(commandResponse);
+    return commandResponse;
   },
 };

@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 			"target": "ESNext",
-			"module": "commonjs",
+			"module": "CommonJS",
 			"rootDir": "bot/src",
 			"outDir": "./dist/",
 			"strict": true,
@@ -20,12 +20,9 @@
 			"sourceMap": false,
 			"baseUrl": "./"
 	},
-	"files": [
-			"bot/src/index.ts"
-	],
 	"include": [
 			"./**/*.ts"
-	],
+, "webpanel/src/components/command.tsx"	],
 	"exclude": [
 			"node_modules",
 			"dist"

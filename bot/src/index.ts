@@ -24,7 +24,9 @@ client.on('ready', async () => {
     return;
   }
 
-  console.log(`Logged in as: ${client.user.username}#${client.user.discriminator}`);
+  console.log(
+    `Logged in as: ${client.user.username}#${client.user.discriminator}`,
+  );
 
   deployCommands(client);
   messageCreateHandler(client);

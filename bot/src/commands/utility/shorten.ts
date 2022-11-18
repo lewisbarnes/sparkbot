@@ -12,8 +12,12 @@ export default {
     ),
   async execute(interaction: CommandInteraction, client: Client) {
     const url = interaction.options.get('url')?.value?.toString();
-    await axios
-      .post(process.env.LINK_SHORTENER_ENDPOINT!, { url: url })
-      .then((response) => interaction.reply({ ephemeral: true, content: response.data.shortLink }));
+    const response = await axios.post(process.env.LINK_SHORTENER_ENDPOINT!, { url: url });
+
+    const commandResponse = { ephemeral: true, content: response.data.shortLink };
+
+    interaction.reply(commandResponse);
+
+    return commandResponse;
   },
 };

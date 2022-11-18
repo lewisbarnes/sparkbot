@@ -4,6 +4,7 @@ import { useEffect, useState } from 'preact/hooks';
 import * as socketio from 'socket.io-client';
 import './app.css';
 import sparkBotLogo from './assets/sparkbot.webp';
+import { Command } from './components/command';
 
 dayjs.extend(duration);
 
@@ -17,6 +18,9 @@ export function App() {
       timestamp: number;
       username: string;
       command: string;
+      userID: string;
+      options: { name: string; value: string }[];
+      response: string;
     }[]
   >([]);
 
@@ -38,6 +42,10 @@ export function App() {
       setBotUptime((prev) => dayjs.duration(prev.asMilliseconds() + 1000));
     }, 1000);
 
+    const dataInterval = setInterval(() => {
+      refreshData();
+    }, 30000);
+
     refreshData();
 
     return () => {
@@ -47,31 +55,26 @@ export function App() {
 
   return (
     <>
+      <div class="absolute w-screen h-screen z-50 grid pointer-events-none" id="modal"></div>
       <div class="flex flex-col bg-black h-screen text-white gap-4 p-4">
         <div class="flex flex-row gap-4 items-center" id="header">
           <img class="rounded-full h-8 w-8 border-2" src={sparkBotLogo} />
           <h1 class="text-2xl">SparkBot Dashboard</h1>
         </div>
-        <div class="flex flex-grow gap-2 max-h-[85vh]">
-          <div class="flex flex-col gap-2 w-[80%] bg-zinc-900 rounded-md border" id="commands">
-            <div class="flex flex-col flex-grow gap-2 p-2 overflow-y-auto">
-              {executedCommands.map((command, i) => (
-                <div
-                  class={`flex items-center gap-2 p-1 px-2 text-sm ${i % 2 ? 'bg-zinc-800' : ''} ${
-                    i == 0 ? 'rounded-t-md' : ''
-                  }`}
-                >
-                  <span class="bg-purple-800 rounded-md p-1">
-                    {dayjs(command.timestamp).format('YYYY/MM/DD HH:mm:ss')}
-                  </span>
-                  <span class="bg-green-800 rounded-md p-1">{command.username}</span>
-                  <span>executed</span>
-                  <span class="font-mono">{command.command}</span>
-                </div>
-              ))}
+        <div class="flex flex-grow gap-2 max-h-[87vh]">
+          <div
+            class="flex flex-col gap-2 lg:w-[80%] flex-grow bg-zinc-900 rounded-md border"
+            id="commands"
+          >
+            <div class="flex flex-col flex-grow gap-2 p-2 overflow-y-auto font-mono text-xs">
+              {executedCommands
+                .sort((a, b) => (a.timestamp < b.timestamp ? -1 : 1))
+                .map((command, i) => (
+                  <Command command={command} />
+                ))}
             </div>
           </div>
-          <div class="flex flex-col gap-1 flex-grow bg-zinc-900 rounded-md border p-2 text-sm">
+          <div class="hidden md:block flex flex-col gap-1 flex-grow bg-zinc-900 rounded-md border p-2 text-sm">
             <p>
               Uptime:{' '}
               {`${Math.floor(
@@ -82,14 +85,14 @@ export function App() {
           </div>
         </div>
 
-        <p class="flex justify-between text-sm items-center">
+        <div class="flex justify-between text-sm items-center">
           <button onClick={refreshData} class="border p-2 rounded-md hover:scale-[104%]">
             Refresh
           </button>
           <div class="flex gap-2 items-center">
             <span>Data last updated: {lastUpdate.format('YYYY/MM/DD HH:mm:ss')}</span>
           </div>
-        </p>
+        </div>
       </div>
     </>
   );
